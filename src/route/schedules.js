@@ -22,19 +22,35 @@ schedules.get("/",async (req,res) =>{
     var id = url.parse(req.url, true).query;
     // id = JSON.parse(id);
     
-    console.log(id.name)
-    if (id.name) {
-        // console.log(id);
-        id = convertKey(id,{'name':'doctor.name'});
-        // id.doctor = {name: id.name};
-        // delete id.name;
-        // console.log(id)
-        // console.log("somsdf",req.query)
-        console.log(id)
-        id['doctor.name'] = new RegExp(req.query.name);
-        // console.log(id.doctor.name)
+    // console.log(id.name)
+    // if (id.rank) {
+    //     // console.log(id);
+    //     id = convertKey(id,{'rank':'doctor.rank'});
+    //     // id.doctor = {name: id.name};
+    //     // delete id.name;
+    //     // console.log(id)
+    //     // console.log("somsdf",req.query)
+    //     console.log(id)
+    //     id['doctor.rank'] = new RegExp(req.query.rank);
+    //     // console.log(id.doctor.name)
         
+    // }
+    // if (id.name) {
+    //     // console.log(id);
+    //     id = convertKey(id,{'name':'doctor.name'});
+    //     // id.doctor = {name: id.name};
+    //     // delete id.name;
+    //     // console.log(id)
+    //     // console.log("somsdf",req.query)
+    //     console.log(id)
+    //     id['doctor.name'] = new RegExp(req.query.name);
+    //     // console.log(id.doctor.name)
+        
+    // }
+    if (id['doctor.name']) {
+        id['doctor.name'] = new RegExp(id['doctor.name'])
     }
+
 
     if (id.date) {
         id.date = JSON.parse(id.date)

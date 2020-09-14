@@ -34,6 +34,12 @@ prescriptions.get("/",function(req,res){
     //         $match: id
     //     },
     //     {
+    //         $group: {
+    //             _id: "ispaid",
+    //             total: {$sum: "$price"}
+    //         }
+    //     },
+    //     {
     //         $project: {
     //             prescription: {
 
