@@ -8,6 +8,7 @@ var Prescription = require("../model/prescription.js");
 
 var showmodel = { openid:1,office: 1, doctor: 1, date: 1, price: 1, type: 1 ,num :1};
 
+
 //添加新挂号单
 registers.post("/", async (req, res) =>{
     console.log(req.body);
@@ -66,7 +67,7 @@ registers.get("/", async (req, res) => {
     // should= { "$gte" : start , "$lt" : end};
     // console.log(should);
 
-    if (req.identity == 1) {//病人和医生接口
+    if (req.identity == 1) {//病人接口
         id.openid = req.username;
         let result = await Register.aggregate([
             {
