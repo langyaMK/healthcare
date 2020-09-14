@@ -22,9 +22,9 @@ registers.post("/", async (req, res) =>{
     console.log(search.date);
     // console.log(d.getDate());
     // console.log(year+'/'+month+'/'+date);
-    var start = new Date(year,month,day);
+    var start = new Date(year,month,date);
     console.log(start);
-    var end = new Date(year,month,day+1);
+    var end = new Date(year,month,date+1);
     search.date = { "$gte" : start , "$lt" : end};
     console.log(search.date);
     // req.body.date = d.getFullYear()+'/'+d.getMonth()+'/'+d.getDate();
