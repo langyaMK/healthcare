@@ -41,7 +41,6 @@ prescriptions.get("/",function(req,res){
     //         }
 
     //     }
-
     // ]);
 
 })
