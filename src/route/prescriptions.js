@@ -64,26 +64,26 @@ prescriptions.get("/:id",function(req,res){
     });
 })
 //添加新处方单
-prescriptions.post("/", function (req, res) {
-    console.log(req.body.patientid);
-    //var reponse=JSON.parse(res);
+// prescriptions.post("/", function (req, res) {
+//     console.log(req.body.patientid);
+//     //var reponse=JSON.parse(res);
     
-    Prescription.insertPrescription(req.body, function (err) {
-        // console.log(result);
-        //res.send(result);
-        if (err) {
-            if (err.code == 11000) {
-                res.status(400).send({ message: "处方单名重复" });
-            }
-            else {
-                console.log(err);
-                res.status(400).json({ message: err.message });
-            }
-        } else {
-            res.send("添加成功");
-        }
-    })
-})
+//     Prescription.insertPrescription(req.body, function (err) {
+//         // console.log(result);
+//         //res.send(result);
+//         if (err) {
+//             if (err.code == 11000) {
+//                 res.status(400).send({ message: "处方单名重复" });
+//             }
+//             else {
+//                 console.log(err);
+//                 res.status(400).json({ message: err.message });
+//             }
+//         } else {
+//             res.send("添加成功");
+//         }
+//     })
+// })
 
 //删除处方单信息
 prescriptions.delete("/:id",function(req,res){
@@ -95,7 +95,7 @@ prescriptions.delete("/:id",function(req,res){
 })
 
 //更改处方单信息
-prescriptions.patch("/",function(req,res){
+prescriptions.post("/",function(req,res){
     console.log(req.body);//body含有registerid 和libraryid\
     var number = 1;
     if(req.body.num){
