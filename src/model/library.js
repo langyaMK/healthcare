@@ -4,7 +4,7 @@ var librarySchema =  new mongoose.Schema({
     type:{
         type:String,
         required:true,
-        enum: ['挂号费', '药品费', '治疗费', '检查费'],
+        enum: ['挂号费', '药品', '治疗项目', '检查项目'],
     },
     name:{
         type:String,
