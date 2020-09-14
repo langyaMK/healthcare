@@ -1,6 +1,6 @@
 var express = require('express');
 var anamneses = express.Router();
-const url = require('url'); 
+const url = require('url');
 var ObjectId = require('mongodb').ObjectId
 
 
@@ -10,10 +10,6 @@ var showmodel = { openid: 1, registerid: 1, advice: 1, diagnosis: 1, statement: 
 //根据检索条件找病历表
 anamneses.get("/", function (req, res) {
     var id = url.parse(req.url, true).query;
-    //console.log(url.parse(req.url, true).query.Did);
-    /*if(id['Oname']){
-        id['Oname']=new RegExp(req.query.Oname);
-    }*/
     Anamnesis.find(id, showmodel,
         function (err, result) {
             //console.log(result);
@@ -23,9 +19,6 @@ anamneses.get("/", function (req, res) {
 
 //根据_id找病历表
 anamneses.get("/:id", function (req, res) {
-    //var name = url.parse(req.url, true).pathname;
-    //name = name.substr(1);
-
     console.log(req.params.id);
     Anamnesis.find({ _id: req.params.id }, showmodel,
         function (err, result) {
@@ -38,7 +31,7 @@ anamneses.get("/:id", function (req, res) {
 anamneses.post("/", function (req, res) {
     console.log(req.body);
     //var reponse=JSON.parse(res);
-    Anamnesis.create(req.body,function (err, result) {
+    Anamnesis.create(req.body, function (err, result) {
         //console.log(result);
         res.send(result);
     });
@@ -103,6 +96,6 @@ anamneses.put("/:id", function (req, res) {
         }
         res.send(result);
     })
-        
+
 })
 module.exports = anamneses;

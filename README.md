@@ -1,3 +1,2 @@
 # healthcare
-shezhi ssh
-lianjie
+## 这是一个医院挂号管理系统，针对医生病人以及管理员分别有不同的界面

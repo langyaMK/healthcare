@@ -103,8 +103,9 @@ prescriptions.patch("/",function(req,res){
         delete req.body.num;
         console.log(number);
     }
-
-    Prescription.update(req.body,{upsert:true,$inc:{"number":number}},function(err,result){
+    // req.num = 1;
+    
+    Prescription.update(req.body,{"$inc":{"number":number}},{upsert:true},function(err,result){
         if(err){
             console.log(err);
         }
