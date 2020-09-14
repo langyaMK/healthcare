@@ -6,7 +6,7 @@ const url = require('url');
 
 var Prescription = require("../model/prescription.js");
 
-var showmodel = {_id:1,registerid:1,libraryid:1,ispaid:1};
+var showmodel = {_id:1,registerid:1,libraryid:1,ispaid:1,number:1};
 //根据检索条件找处方单
 prescriptions.get("/",function(req,res){
     var id = url.parse(req.url, true).query;
@@ -96,13 +96,27 @@ prescriptions.delete("/:id",function(req,res){
 
 //更改处方单信息
 prescriptions.patch("/",function(req,res){
-    console.log(req.body);
-    Prescription.updateOne(req.body[0], req.body[1],function(err,result){
+    console.log(req.body);//body含有registerid 和libraryid\
+    var number = 1;
+    if(req.body.num){
+        number = req.body.num;
+        delete req.body.num;
+        console.log(number);
+    }
+
+    Prescription.update(req.body,{upsert:true,$inc:{"number":number}},function(err,result){
         if(err){
             console.log(err);
         }
         res.send(result);
     })
+
+    // Prescription.updateOne(req.body[0], req.body[1],function(err,result){
+    //     if(err){
+    //         console.log(err);
+    //     }
+    //     res.send(result);
+    // })
 })
 
 //更改处方单信息

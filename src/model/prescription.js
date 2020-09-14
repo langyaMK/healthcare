@@ -9,10 +9,16 @@ var prescriptionSchema =  new mongoose.Schema({
     libraryid:{
         type:ObjectId,
         required:true,
+        unique:true,
+        dropDups:true,
     },
     ispaid:{
         type:Boolean,
         default:false,
+    },
+    number:{
+        type:Number,
+        default:1,
     }
 })
 
