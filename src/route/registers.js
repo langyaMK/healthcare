@@ -13,7 +13,10 @@ var showmodel = { openid:1,name: 1,identityCode: 1,ioffice: 1, doctor: 1, date: 
 registers.post("/", async (req, res) =>{
     console.log(req.body);
     // req.body.date= new Date(req.body.date);
-    var search = JSON.parse(JSON.stringify(req.body));
+    var search ;
+    if(req.body.doctorid){
+        search.doctorid = req.body.doctorid;
+    }
     //var reponse=JSON.parse(res);
     search.date =new Date(search.date);
     var year = search.date.getFullYear();

@@ -29,7 +29,7 @@ async function getredis(){
     console.log(redis);
 }
 // getredis()
-gettoken()
+// gettoken()
 // var token = TokenService.getAccessToken()
 // console.log(`token ${token}`);
 
