@@ -49,7 +49,10 @@ registers.post("/", async (req, res) =>{
         libraryid = "5f59f64bca654936da9a627f";
     }
 
-    Prescription.create({"libraryid": libraryid,"registerid":data._id});
+    Prescription.create({"libraryid": libraryid,"registerid":data._id},function (err, result) {
+        //console.log(result);
+        // res.send(result);
+    });
     res.send("添加成功");
 })
 
