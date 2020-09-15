@@ -6,6 +6,14 @@ var registerSchema =  new mongoose.Schema({
         type:String,
         required:true,
     },
+    patientname: {
+        type: String,
+        required:true
+    },
+    identityCode:{
+        type : String,
+        required:true,
+    },
     office:{
         type:String,
         required:true,

@@ -110,7 +110,7 @@ prescriptions.post("/",function(req,res){
         console.log(number);
     }
     // req.num = 1;
-    
+    console.log(req.body);
     Prescription.update(req.body,{"$inc":{"number":number}},{upsert:true},function(err,result){
         if(err){
             console.log(err);

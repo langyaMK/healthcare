@@ -5,21 +5,40 @@ var querystring = require("querystring");
 var jwt = require("jwt-simple");
 var url = require("url");
 var redis = require('redis');
+var schedule = require('node-schedule');
 var secret = "jiankangyiliao";
 const tokenExpiresTime = 1000 * 60 * 60 * 24 * 7  //毫秒为单位 这里是7天
 var Patient = require('../model/patient.js');
 var client = require("../redisConnect.js");
+var TokenService = require("../TokenService.js");
+
+var appid = "wx23ab52eb69b7e1c4";
+var appsecret = require('../APPSecret');
+const { getAccessToken } = require("../TokenService.js");
 
 var usermodel = {_id:1,name:1,phone:1,identityCode:1};
 var adminmodel = {_id:1,openid:1,name:1,phone:1,identityCode:1};
+ 
+async function gettoken() {
+    var token = await TokenService.getAccessToken()
+    console.log("token");
+    console.log(token)
+}
+async function getredis(){
+    var redis = await client.synGet("WECHAT-ACESSTOKEN")
+    console.log(redis);
+}
+// getredis()
+gettoken()
+// var token = TokenService.getAccessToken()
+// console.log(`token ${token}`);
 
 patients.post("/sessions", (req, response) => {
     // users.post("/login", async(req, response) => {
     console.log("/api/users/sessions");
     console.log(`req.body ${req.body}`);
-    var appid = "wx23ab52eb69b7e1c4";
-    var appsecret = require('../APPSecret');
-    console.log(appsecret);
+
+    //console.log(appsecret);
     console.log(`req.bode.code ${req.body.code}`);
 
     // var redis = require('redis'),
@@ -78,7 +97,8 @@ patients.post("/sessions", (req, response) => {
     } else {
         console.log("没有查到code")
     }
-})
+});
+
 
 //根据jwt中openid查找用户信息,管理员也可访问
 patients.get("/",function(req,res){

@@ -9,4 +9,31 @@ client.on('ready', function (res) {
     console.log('redis-ready');
 });
 
+/**
+ * 获取键值同步返回
+ * @param key
+ * @returns {Promise<any>}
+ */
+client.synGet = async(key) => {
+    // const newGet = async(key) => {
+    //     let val = await new Promise((resolve => {
+    //         client.get(key, function (err, res) {
+    //             return resolve(res);
+    //         });
+    //     }));
+    //     return JSON.parse(val);
+    // };
+    // return await newGet(key);
+    return new Promise((resolve, reject)=>{
+        client.get(key, (err, res)=>{
+            // console.log(err, res);
+            if(err){
+                reject(err);
+            }else{
+                resolve(res);
+            }
+        });
+    });
+};
+
 module.exports = client;
