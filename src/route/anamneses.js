@@ -10,11 +10,20 @@ var showmodel = { openid: 1, registerid: 1, advice: 1, diagnosis: 1, statement: 
 //根据检索条件找病历表
 anamneses.get("/", function (req, res) {
     var id = url.parse(req.url, true).query;
-    Anamnesis.find(id, showmodel,
-        function (err, result) {
-            //console.log(result);
-            res.send(result);
-        });
+    if (req.identity == 1) {//病人接口
+        id.openid = req.username;
+        Anamnesis.find(id, showmodel,
+            function (err, result) {
+                //console.log(result);
+                res.send(result);
+            });
+    }else {
+        Anamnesis.find(id, showmodel,
+            function (err, result) {
+                //console.log(result);
+                res.send(result);
+            });
+    }
 })
 
 //根据_id找病历表
