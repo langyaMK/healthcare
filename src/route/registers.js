@@ -50,7 +50,7 @@ registers.post("/", async (req, res) =>{
     }
 
     Prescription.create({"libraryid": libraryid,"registerid":data._id},function (err, result) {
-        //console.log(result);
+        console.log(result);
         // res.send(result);
     });
     res.send("添加成功");
@@ -126,6 +126,7 @@ registers.get("/", async (req, res) => {
             //     }
             // }
         ]);
+        console.log(result);
         var registrations ={}
         var resultArr=[]
         result.forEach((element,index)=>{

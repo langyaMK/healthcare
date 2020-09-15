@@ -1,53 +1,59 @@
 var express = require('express');
 var prescriptions = express.Router();
-//const http = require('http');
-//const path = require('path');
 const url = require('url');
+var ObjectId = require('mongodb').ObjectId
 
 var Prescription = require("../model/prescription.js");
 
 var showmodel = {_id:1,registerid:1,libraryid:1,ispaid:1,number:1};
 //根据检索条件找处方单
-prescriptions.get("/",function(req,res){
+prescriptions.get("/",async(req,res) => {
     var id = url.parse(req.url, true).query;
      //console.log(url.parse(req.url, true).query.Did);
     /*if(id['Oname']){
         id['Oname']=new RegExp(req.query.Oname);
     }*/
-    Prescription.find(id, showmodel, 
-        function (err, result) {
-         //console.log(result);
-        res.send(result);
-    });
+    // Prescription.find(id, showmodel, 
+    //     function (err, result) {
+    //      //console.log(result);
+    //     res.send(result);
+    // });
+    if(id.registerid){
+        id.registerid = ObjectId(id.registerid);
+    }
+    if(id.libraryid){
+        id.libraryid = ObjectId(id.libraryid);
+    }
 
-    //按ispay统计price的聚合函数
-    // let result = await Prescription.aggregate([
-    //     {   // 操作的Model为Prescription
-    //         $lookup: {
-    //             from: "libraries", // 数据库中关联的集合名
-    //             localField: "libraryid", // prescription文档中关联的字段
-    //             foreignField: "_id", // library文档中关联的字段
-    //             as: "libraryid" // 返回数据的字段名
-    //         }
-    //     },
-    //     {
-    //         $match: id
-    //     },
-    //     {
-    //         $group: {
-    //             _id: "ispaid",
-    //             total: {$sum: "$price"}
-    //         }
-    //     },
-    //     {
-    //         $project: {
-    //             prescription: {
+    // 显示聚合药品库的相关信息
+    let result = await Prescription.aggregate([
+        {
+            $match: id
+        },
+        {   // 操作的Model为Prescription
+            $lookup: {
+                from: "libraries", // 数据库中关联的集合名
+                localField: "libraryid", // prescription文档中关联的字段
+                foreignField: "_id", // library文档中关联的字段
+                as: "library" // 返回数据的字段名
+            }
+        },
+        
+        // {
+        //     $group: {
+        //         _id: "ispaid",
+        //         total: {$sum: "$price"}
+        //     }
+        // },
+        // {
+        //     $project: {
+        //         prescription: {
 
-    //             }
-    //         }
-
-    //     }
-    // ]);
+        //         }
+        //     }
+        // }
+    ]);
+    res.send(result);
 
 })
 
