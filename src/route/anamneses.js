@@ -68,8 +68,14 @@ anamneses.delete("/", function (req, res) {
 anamneses.patch("/", function (req, res) {
     var id = url.parse(req.url, true).query;
     console.log(req.body);
-    Anamnesis.updateMany(id, req.body, function (err, result) {
-        if (err) {
+    // Anamnesis.updateMany(id, req.body, function (err, result) {
+    //     if (err) {
+    //         console.log(err);
+    //     }
+    //     res.send(result);
+    // })
+    Anamnesis.updateOne(id, req.body, {upsert:true}, function(err,result){
+        if(err){
             console.log(err);
         }
         res.send(result);
