@@ -15,7 +15,7 @@ const TOKEN = {
      * access_token有效期，默认两个小时
      * @type {number}
      */
-    EXPIRY_DATE : 60 * 60 * 2 * 1000,
+    EXPIRY_DATE : 55 * 60 * 2 * 1000,
 };
 
 function TokenService() {
@@ -47,7 +47,7 @@ var getAccessToken = async () =>{
     request(opts, (err,res,body)=>{
         if (!err && res.statusCode == 200) {
             var bodyToken=JSON.parse(body);
-            console.log("bodyToken");
+            console.log("weixin accessToken");
             console.log(bodyToken);
 
             if(bodyToken&&bodyToken.access_token){

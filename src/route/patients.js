@@ -5,16 +5,13 @@ var querystring = require("querystring");
 var jwt = require("jwt-simple");
 var url = require("url");
 var redis = require('redis');
-var schedule = require('node-schedule');
 var secret = "jiankangyiliao";
 const tokenExpiresTime = 1000 * 60 * 60 * 24 * 7  //毫秒为单位 这里是7天
 var Patient = require('../model/patient.js');
 var client = require("../redisConnect.js");
-var TokenService = require("../TokenService.js");
 
 var appid = "wx23ab52eb69b7e1c4";
 var appsecret = require('../APPSecret');
-const { getAccessToken } = require("../TokenService.js");
 
 var usermodel = {_id:1,name:1,phone:1,identityCode:1};
 var adminmodel = {_id:1,openid:1,name:1,phone:1,identityCode:1};

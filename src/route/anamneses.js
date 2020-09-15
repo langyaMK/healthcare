@@ -57,8 +57,9 @@ anamneses.delete("/", function (req, res) {
 
 //更改病历表信息
 anamneses.patch("/", function (req, res) {
+    var id = url.parse(req.url, true).query;
     console.log(req.body);
-    Anamnesis.updateMany(req.body[0], req.body[1], function (err, result) {
+    Anamnesis.updateMany(id, req.body, function (err, result) {
         if (err) {
             console.log(err);
         }
@@ -67,8 +68,9 @@ anamneses.patch("/", function (req, res) {
 })
 //更改病历表信息
 anamneses.put("/", function (req, res) {
+    var id = url.parse(req.url, true).query;
     console.log(req.body);
-    Anamnesis.updateMany(req.body[0], req.body[1], function (err, result) {
+    Anamnesis.updateMany(id, req.body, function (err, result) {
         if (err) {
             console.log(err);
         }

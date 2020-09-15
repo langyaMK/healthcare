@@ -1,10 +1,13 @@
 var express = require('express');
 var registers = express.Router();
 const url = require('url'); 
+var querystring = require("querystring");
 var ObjectId = require('mongodb').ObjectId
 
 var Register = require("../model/register.js");
 var Prescription = require("../model/prescription.js");
+
+var TokenService = require("../TokenService.js");
 
 var showmodel = { openid:1,name: 1,identityCode: 1,ioffice: 1, doctor: 1, date: 1, price: 1, type: 1 ,num :1};
 
@@ -59,6 +62,41 @@ registers.post("/", async (req, res) =>{
     res.send("添加成功");
 })
 
+//发送通知
+registers.post("/notifications", async (req, res) =>{
+    console.log(req.body);
+    var access_token = await TokenService.getAccessToken();
+    var date = new date();
+    let requestData = {
+        "access_token": access_token,
+        "touser": req.body.openid,
+        "template_id": "TEMPLATE_ID",//TODO
+        // "page": "index",//TODO
+        "miniprogram_state":"developer",
+        "lang":"zh_CN",
+        "data": {
+            "number01": {
+                "value": req.body.num
+            }
+        }
+    }
+    // var param = {
+    //     "access_token": access_token
+    // };
+    // var options = {
+    //     method: "post",
+    //     url: "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?" + querystring.stringify(param);
+    // };
+    let result = await request
+        .post(`https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=${access_token}`)
+        .send(requestData)
+        .set('Accept', 'application/json')
+        
+    console.log(result);
+
+    res.send(result);
+})
+
 //根据检索条件找挂号单
 registers.get("/", async (req, res) => {
     var id = url.parse(req.url, true).query;
@@ -72,9 +110,18 @@ registers.get("/", async (req, res) => {
     // var end = new Date(year+'/'+month+'/'+(today+1));
     // should= { "$gte" : start , "$lt" : end};
     // console.log(should);
+    
 
     if (req.identity == 1) {//病人接口
         id.openid = req.username;
+        if (id.date) {
+            id.date = JSON.parse(id.date)
+            Object.keys(id.date).forEach(key => {
+                console.log(key)
+                id.date[key] = new Date(id.date[key])
+            })
+        // console.log(id);
+        }
         let result = await Register.aggregate([
             {
                 $match:id
