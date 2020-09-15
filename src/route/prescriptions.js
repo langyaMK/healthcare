@@ -111,7 +111,7 @@ prescriptions.post("/",function(req,res){
     }
     // req.num = 1;
     console.log(req.body);
-    Prescription.update(req.body,{"$inc":{"number":number}},{upsert:true},function(err,result){
+    Prescription.updateOne(req.body,{"$inc":{"number":number}},{upsert:true},function(err,result){
         if(err){
             console.log(err);
         }
