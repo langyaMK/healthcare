@@ -1,5 +1,6 @@
 var express = require('express');
 var registers = express.Router();
+var request = require('request');
 const url = require('url'); 
 var querystring = require("querystring");
 var ObjectId = require('mongodb').ObjectId
@@ -8,6 +9,7 @@ var Register = require("../model/register.js");
 var Prescription = require("../model/prescription.js");
 
 var TokenService = require("../TokenService.js");
+var TEMPLATE_ID = "Ij2uH1mf2tuqPXy5kzLPBVuF37ttW6Tzsm4Sdvqxo-s";
 
 var showmodel = { openid:1,name: 1,identityCode: 1,ioffice: 1, doctor: 1, date: 1, price: 1, type: 1 ,num :1};
 
@@ -66,33 +68,44 @@ registers.post("/", async (req, res) =>{
 registers.post("/notifications", async (req, res) =>{
     console.log(req.body);
     var access_token = await TokenService.getAccessToken();
-    var date = new date();
+    var date = new Date(); 
+    var param = {
+        "access_token": access_token
+    };
+    console.log(param)
     let requestData = {
-        "access_token": access_token,
-        "touser": req.body.openid,
-        "template_id": "TEMPLATE_ID",//TODO
+        "touser": req.username,
+        "template_id": TEMPLATE_ID,
         // "page": "index",//TODO
         "miniprogram_state":"developer",
         "lang":"zh_CN",
         "data": {
-            "number01": {
-                "value": req.body.num
+            "time2": {
+                "value": "2020年8月5日"
+            },
+            "thing3": {
+                "value": "到你了"
+            },
+            "thing4": {
+                "value": req.body.number 
             }
         }
     }
-    // var param = {
-    //     "access_token": access_token
-    // };
-    // var options = {
-    //     method: "post",
-    //     url: "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?" + querystring.stringify(param);
-    // };
-    let result = await request
-        .post(`https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=${access_token}`)
-        .send(requestData)
-        .set('Accept', 'application/json')
-        
-    console.log(result);
+    var options = {
+        method: "post",
+        url: "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?" + querystring.stringify(param),
+        body: JSON.stringify(requestData)
+    };
+    console.log(options)
+    //let result = await request.post(`https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=${access_token}`).send(requestData).set('Accept', 'application/json');
+    let result = request(options, (err, response, body) => {
+        // console.log(`res.body ${res.body}`);
+        if (!err && response.statusCode == 200) {
+            //输出返回的内容
+            console.log(body);
+        }
+    })
+    // console.log(result);
 
     res.send(result);
 })
