@@ -18,12 +18,12 @@ var showmodel = { openid:1,name: 1,identityCode: 1,ioffice: 1, doctor: 1, date: 
 registers.post("/", async (req, res) =>{
     console.log(req.body);
     // req.body.date= new Date(req.body.date);
-    var search ;
+    var search ={};
     if(req.body.doctorid){
         search.doctorid = req.body.doctorid;
     }
     //var reponse=JSON.parse(res);
-    search.date =new Date(search.date);
+    search.date =new Date(req.body.date);
     var year = search.date.getFullYear();
     var month = search.date.getMonth();//月份返回0-11
     var date = search.date.getDate();
