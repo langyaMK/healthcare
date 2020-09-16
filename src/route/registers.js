@@ -10,6 +10,7 @@ var Prescription = require("../model/prescription.js");
 
 var TokenService = require("../TokenService.js");
 var TEMPLATE_ID = "Ij2uH1mf2tuqPXy5kzLPBVuF37ttW6Tzsm4Sdvqxo-s";
+//var TEMPLATE_ID2 = "Ij2uH1mf2tuqPXy5kzLPBRMAc1fTcl9FSKt_ivTCZUs";
 
 var showmodel = { openid:1,name: 1,identityCode: 1,ioffice: 1, doctor: 1, date: 1, price: 1, type: 1 ,num :1};
 
@@ -74,20 +75,20 @@ registers.post("/notifications", async (req, res) =>{
     };
     console.log(param)
     let requestData = {
-        "touser": req.username,
+        "touser": req.body.openid,//todo
         "template_id": TEMPLATE_ID,
         // "page": "index",//TODO
         "miniprogram_state":"developer",
         "lang":"zh_CN",
         "data": {
             "time2": {
-                "value": "2020年8月5日"
+                "value": date.toLocaleTimeString('chinese', { hour12: false }),
             },
             "thing3": {
                 "value": "到你了"
             },
             "thing4": {
-                "value": req.body.number 
+                "value": req.body.num
             }
         }
     }

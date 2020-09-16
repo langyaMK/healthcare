@@ -4,6 +4,7 @@ const router = require("./router");
 var app = express();
 var bodyParser = require('body-parser');
 var expressSession = require('express-session')
+var path = require('path')
 
 // var key = fs.readFileSync("2_www.mgxwz.com.key");
 // var cert = fs.readFileSync("1_www.mgxwz.com_bundle.crt");
@@ -67,6 +68,5 @@ app.use(expressSession({
 });*/
 
 app.use("/api", router);
-app.use("/upload",express.static("upload"));
-
+app.use("/upload",express.static(path.join(__dirname, 'upload')));
 app.listen(8899, () => console.log('Example app listening on port 8899!'));

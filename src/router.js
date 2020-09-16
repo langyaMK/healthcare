@@ -10,7 +10,7 @@ const libraries = require("./route/libraries.js");
 const registers = require("./route/registers.js");
 const prescriptions = require("./route/prescriptions.js");
 const anamneses = require("./route/anamneses.js");
-const upimgs = require("./route/upimgs.js");
+//const upimgs = require("./route/upimgs.js");
 
 router.use(checktoken);
 router.use("/doctors", doctors);
@@ -21,7 +21,7 @@ router.use("/library", libraries);
 router.use("/registers", registers);
 router.use("/prescriptions", prescriptions);
 router.use("/anamneses",anamneses)
-router.use("/upload",upimgs);
+//router.use("/upload",upimgs);
 
 router.get("/401", function (req, res) {
     res.status(401).json({ msg: "Auth Failed" })

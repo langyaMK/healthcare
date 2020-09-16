@@ -54,6 +54,12 @@ doctors.post('/sessions', async (req, res, next) => {
                     idAdmin: doctorInformation.isAdmin,
                     doctorid: doctorInformation._id,
                     name:doctorInformation.name,
+                    age: doctorInformation.age,
+                    sex: doctorInformation.sex,
+                    rank: doctorInformation.rank,
+                    office: doctorInformation.office,
+                    detail: doctorInformation.detail,
+                    specialize: doctorInformation.specialize,
                     token
                 })
             } else {

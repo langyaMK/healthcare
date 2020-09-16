@@ -2,10 +2,10 @@ var express = require('express');
 var anamneses = express.Router();
 const url = require('url');
 var ObjectId = require('mongodb').ObjectId
-
+var multer = require('../utils/multerUtil');
 
 var Anamnesis = require("../model/anamnesis.js");
-var showmodel = { openid: 1, registerid: 1, advice: 1, diagnosis: 1, statement: 1 };
+var showmodel = { openid: 1, registerid: 1, advice: 1, diagnosis: 1, statement: 1, date:1, office:1 };
 
 //根据检索条件找病历表
 anamneses.get("/", function (req, res) {
@@ -64,8 +64,9 @@ anamneses.delete("/", function (req, res) {
     })
 })
 
+
 //更改病历表信息
-anamneses.patch("/", function (req, res) {
+anamneses.patch("/", multer.anamnesesInput,function (req, res) {
     var id = url.parse(req.url, true).query;
     console.log(req.body);
     // Anamnesis.updateMany(id, req.body, function (err, result) {

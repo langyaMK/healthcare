@@ -9,6 +9,13 @@ var anamnesisSchma = new mongoose.Schema({
         type:ObjectId,
         required:true,
     },
+    date:{
+        type:String
+    },
+    office:{
+        type:String,
+        required:true,
+    },
     advice:{
         type:String,
     },
