@@ -10,7 +10,7 @@ var Prescription = require("../model/prescription.js");
 
 var TokenService = require("../TokenService.js");
 var TEMPLATE_ID = "Ij2uH1mf2tuqPXy5kzLPBVuF37ttW6Tzsm4Sdvqxo-s";
-//var TEMPLATE_ID2 = "Ij2uH1mf2tuqPXy5kzLPBRMAc1fTcl9FSKt_ivTCZUs";
+var TEMPLATE_ID2 = "Ij2uH1mf2tuqPXy5kzLPBRMAc1fTcl9FSKt_ivTCZUs";
 
 var showmodel = { openid:1,name: 1,identityCode: 1,ioffice: 1, doctor: 1, date: 1, price: 1, type: 1 ,num :1};
 
@@ -92,10 +92,33 @@ registers.post("/notifications", async (req, res) =>{
             }
         }
     }
+    let requestData2 = {
+        "touser": req.body.openid2,//todo
+        "template_id": TEMPLATE_ID2,
+        // "page": "index",//TODO
+        "miniprogram_state":"developer",
+        "lang":"zh_CN",
+        "data": {
+            "time2": {
+                "value": date.toLocaleTimeString('chinese', { hour12: false }),
+            },
+            "thing3": {
+                "value": "还差一个到你"
+            },
+            "thing4": {
+                "value": req.body.num + 1
+            }
+        }
+    }
     var options = {
         method: "post",
         url: "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?" + querystring.stringify(param),
         body: JSON.stringify(requestData)
+    };
+    var options2 = {
+        method: "post",
+        url: "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?" + querystring.stringify(param),
+        body: JSON.stringify(requestData2)
     };
     console.log(options)
     //let result = await request.post(`https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=${access_token}`).send(requestData).set('Accept', 'application/json');
@@ -106,9 +129,16 @@ registers.post("/notifications", async (req, res) =>{
             console.log(body);
         }
     })
+    let result2 = request(options2, (err, response, body) => {
+        // console.log(`res.body ${res.body}`);
+        if (!err && response.statusCode == 200) {
+            //输出返回的内容
+            console.log(body);
+        }
+    })
     // console.log(result);
 
-    res.send(result);
+    res.send(result,result2);
 })
 
 //根据检索条件找挂号单
