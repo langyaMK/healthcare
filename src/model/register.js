@@ -41,8 +41,15 @@ var registerSchema =  new mongoose.Schema({
     num:{
         type:Number,
         required:true,
+    },
+    status:{
+        type: Number,
+        required:true,
+        default: 1,
     }
 })
+
+//1代表预约中，2代表受理中，3代表已完成
 
 //静态方法，增加挂号单
 registerSchema.statics.insertRegister = function(json,callback){

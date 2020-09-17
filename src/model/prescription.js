@@ -2,6 +2,10 @@ var mongoose = require("mongoose");
 const { ObjectId } = require("mongodb");
 
 var prescriptionSchema =  new mongoose.Schema({
+    openid:{
+        type:String,
+        required:true,
+    },
     registerid:{
         type:ObjectId,
         required:true,

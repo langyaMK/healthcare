@@ -12,7 +12,7 @@ var TokenService = require("../TokenService.js");
 var TEMPLATE_ID = "Ij2uH1mf2tuqPXy5kzLPBVuF37ttW6Tzsm4Sdvqxo-s";
 var TEMPLATE_ID2 = "Ij2uH1mf2tuqPXy5kzLPBRMAc1fTcl9FSKt_ivTCZUs";
 
-var showmodel = { openid:1,name: 1,identityCode: 1,ioffice: 1, doctor: 1, date: 1, price: 1, type: 1 ,num :1};
+var showmodel = { openid:1,name: 1,patientname: 1,identityCode: 1,office: 1, doctor: 1, date: 1, price: 1, type: 1 ,num :1,status: 1};
 
 
 //添加新挂号单
@@ -51,14 +51,13 @@ registers.post("/", async (req, res) =>{
     req.body.openid = req.username;
     console.log(req.body);
     let data = await Register.create(req.body);
-
     console.log("regInf" + data);
     var libraryid = "5f59f626ca654936da9a627e";
     if(data.type){
         libraryid = "5f59f64bca654936da9a627f";
     }
 
-    Prescription.create({"libraryid": libraryid,"registerid":data._id},function (err, result) {
+    Prescription.create({"openid": req.username,"libraryid": libraryid,"registerid":data._id},function (err, result) {
         console.log(result);
         // res.send(result);
     });
@@ -66,47 +65,30 @@ registers.post("/", async (req, res) =>{
 })
 
 //发送通知
-registers.post("/notifications", async (req, res) =>{
+registers.post("/notifications", async (req, res) => {
     console.log(req.body);
     var access_token = await TokenService.getAccessToken();
-    var date = new Date(); 
+    var date = new Date();
     var param = {
         "access_token": access_token
     };
-    console.log(param)
+    console.log(param);
+    
     let requestData = {
-        "touser": req.body.openid,//todo
+        "touser": req.body.openid,
         "template_id": TEMPLATE_ID,
         // "page": "index",//TODO
-        "miniprogram_state":"developer",
-        "lang":"zh_CN",
+        "miniprogram_state": "developer",
+        "lang": "zh_CN",
         "data": {
             "time2": {
                 "value": date.toLocaleTimeString('chinese', { hour12: false }),
             },
             "thing3": {
-                "value": "到你了"
+                "value": `${req.body.office} ${req.body.doctor}`,
             },
             "thing4": {
-                "value": req.body.num
-            }
-        }
-    }
-    let requestData2 = {
-        "touser": req.body.openid2,//todo
-        "template_id": TEMPLATE_ID2,
-        // "page": "index",//TODO
-        "miniprogram_state":"developer",
-        "lang":"zh_CN",
-        "data": {
-            "time2": {
-                "value": date.toLocaleTimeString('chinese', { hour12: false }),
-            },
-            "thing3": {
-                "value": "还差一个到你"
-            },
-            "thing4": {
-                "value": req.body.num + 1
+                "value": `就诊序号:${req.body.num},请就诊`,
             }
         }
     }
@@ -115,30 +97,52 @@ registers.post("/notifications", async (req, res) =>{
         url: "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?" + querystring.stringify(param),
         body: JSON.stringify(requestData)
     };
-    var options2 = {
-        method: "post",
-        url: "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?" + querystring.stringify(param),
-        body: JSON.stringify(requestData2)
-    };
-    console.log(options)
-    //let result = await request.post(`https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=${access_token}`).send(requestData).set('Accept', 'application/json');
-    let result = request(options, (err, response, body) => {
+    request(options, (err, response, body) => {
         // console.log(`res.body ${res.body}`);
         if (!err && response.statusCode == 200) {
             //输出返回的内容
             console.log(body);
         }
     })
-    let result2 = request(options2, (err, response, body) => {
-        // console.log(`res.body ${res.body}`);
-        if (!err && response.statusCode == 200) {
-            //输出返回的内容
-            console.log(body);
-        }
-    })
-    // console.log(result);
 
-    res.send(result,result2);
+    if (req.body.next) {    
+        let requestData2 = {
+            "touser": req.body.next,//todo
+            "template_id": TEMPLATE_ID2,
+            // "page": "index",//TODO
+            "miniprogram_state": "developer",
+            "lang": "zh_CN",
+            "data": {
+                "time2": {
+                    "value": date.toLocaleTimeString('chinese', { hour12: false }),
+                },
+                "thing3": {
+                    "value": `${req.body.office} ${req.body.doctor}`,
+                },
+                "thing4": {
+                    "value": `就诊序号:${req.body.num+1},准备就诊`,
+                }
+            }
+        };
+        var options2 = {
+            method: "post",
+            url: "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?" + querystring.stringify(param),
+            body: JSON.stringify(requestData2)
+        };
+        console.log(options2)
+        request(options2, (err2, response2, body2) => {
+            // console.log(`res.body ${res.body}`);
+            if (!err2 && response2.statusCode == 200) {
+                //输出返回的内容
+                console.log(body2);
+            }
+        })
+    }
+
+    res.send();
+    
+
+
 })
 
 //根据检索条件找挂号单

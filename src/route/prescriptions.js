@@ -5,10 +5,85 @@ var ObjectId = require('mongodb').ObjectId
 
 var Prescription = require("../model/prescription.js");
 
-var showmodel = {_id:1,registerid:1,libraryid:1,ispaid:1,number:1};
+var showmodel = {_id:1,openid:1,registerid:1,libraryid:1,ispaid:1,number:1};
 //根据检索条件找处方单
-prescriptions.get("/",async(req,res) => {
+prescriptions.get("/", async (req, res) => {
     var id = url.parse(req.url, true).query;
+    console.log(id);
+    if (req.identity == 1) {
+        id.openid = req.username;
+        //将传过来的ispaid重新换成Boolean类型
+        //如果id.ispaid为“true”，则ispaid为true
+        //如果id.ispaid为“false”，则ispaid为false
+        let ispaid = id.ispaid==="true";
+        id.ispaid = ispaid;
+        console.log(ispaid);
+        console.log(id.ispaid);
+        console.log(id);
+        let result = await Prescription.aggregate([
+            {
+                $match: id
+            },
+            {   // 操作的Model为Prescription
+                $lookup: {
+                    from: "libraries", // 数据库中关联的集合名
+                    localField: "libraryid", // prescription文档中关联的字段
+                    foreignField: "_id", // library文档中关联的字段
+                    as: "library" // 返回数据的字段名
+                }
+            },
+            // {
+            //     $project: {
+                        
+            //     }
+            // }
+        ]);
+        console.log(result);
+        res.send(result);
+        // Prescription.find({ openid: req.username }, 
+        //     function (err, result) {
+        //         //console.log(result);
+        //         res.send(result);
+        //     });
+    } else if (req.identity == 2 || req.identity == 3) {
+        if (id.registerid) {
+            id.registerid = ObjectId(id.registerid);
+        }
+        if (id.libraryid) {
+            id.libraryid = ObjectId(id.libraryid);
+        }
+
+        // 显示聚合药品库的相关信息
+        let result = await Prescription.aggregate([
+            {
+                $match: id
+            },
+            {   // 操作的Model为Prescription
+                $lookup: {
+                    from: "libraries", // 数据库中关联的集合名
+                    localField: "libraryid", // prescription文档中关联的字段
+                    foreignField: "_id", // library文档中关联的字段
+                    as: "library" // 返回数据的字段名
+                }
+            },
+            // {
+            //     $group: {
+            //         _id: "ispaid",
+            //         total: {$sum: "$price"}
+            //     }
+            // },
+            // {
+            //     $project: {
+            //         prescription: {
+
+            //         }
+            //     }
+            // }
+        ]);
+        res.send(result);
+    } else {
+        res.status(400).send({ message: "错误" });
+    }
      //console.log(url.parse(req.url, true).query.Did);
     /*if(id['Oname']){
         id['Oname']=new RegExp(req.query.Oname);
@@ -18,41 +93,8 @@ prescriptions.get("/",async(req,res) => {
     //      //console.log(result);
     //     res.send(result);
     // });
-    if(id.registerid){
-        id.registerid = ObjectId(id.registerid);
-    }
-    if(id.libraryid){
-        id.libraryid = ObjectId(id.libraryid);
-    }
-
-    // 显示聚合药品库的相关信息
-    let result = await Prescription.aggregate([
-        {
-            $match: id
-        },
-        {   // 操作的Model为Prescription
-            $lookup: {
-                from: "libraries", // 数据库中关联的集合名
-                localField: "libraryid", // prescription文档中关联的字段
-                foreignField: "_id", // library文档中关联的字段
-                as: "library" // 返回数据的字段名
-            }
-        },
-        // {
-        //     $group: {
-        //         _id: "ispaid",
-        //         total: {$sum: "$price"}
-        //     }
-        // },
-        // {
-        //     $project: {
-        //         prescription: {
-
-        //         }
-        //     }
-        // }
-    ]);
-    res.send(result);
+   
+   
 
 })
 
