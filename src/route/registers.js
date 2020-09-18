@@ -145,7 +145,21 @@ registers.post("/notifications", async (req, res) => {
 
 })
 
-//返回挂号表人数
+//返回按科室统计挂号人数
+registers.get("/groups",async(req,res)=>{
+    let counts = await Register.aggregate([
+        {
+            $group : {
+                _id : "$office",
+                total : {$sum: 1}
+            }
+        }
+    ])
+    console.log(counts);
+    res.send(counts);
+})
+
+//返回挂号表全部人数
 registers.get("/statistics",async (req, res) => {
     // var search = {};
     // Register.countDocuments(search,function(err,count){
@@ -163,17 +177,6 @@ registers.get("/statistics",async (req, res) => {
         }
     })
     res.send(`counts ${counts}`);
-
-    // Register.aggregate([
-    //     {
-    //         $group : {
-    //             total : {$sum: 1}
-    //         }
-    //     }
-    // ]).exec(function(err,result){
-    //     console.log(result);
-    //     res.send(`total ${result}`);
-    // })
 })
 
 //根据检索条件找挂号单
@@ -283,7 +286,6 @@ registers.get("/", async (req, res) => {
         
         res.send(resultArr)
     } else if(req.identity == 2||req.identity == 3 ){
-        console.log(id)
         if(id.isToday){
             var date = new Date();
             var year = date.getFullYear();
@@ -302,7 +304,6 @@ registers.get("/", async (req, res) => {
             id.doctorid = ObjectId(id.doctorid);
         }
         
-        console.log("registers ",id.isUnresolved == true)
         /* by LeeG4ng
          * isUnresovled 返回status为1、2的(未被处理的)
          */

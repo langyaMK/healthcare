@@ -18,13 +18,13 @@ async function createOrder(goods) {
     // }
     // 根据官方给的 API 文档提供的一个参数集合
     let bizContent = {
-        out_trade_no: goods._id.toString(), // 根据时间戳来生成一个订单号,
+        out_trade_no: goods.order._id.toString(), // 根据时间戳来生成一个订单号,
         product_code: 'FAST_INSTANT_TRADE_PAY', // 商品码，当前只支持这个
         total_amount: goods.totalAmount, // 商品价格
-        subject: '商品',
-        body: '商品详情',
+        subject: '医院订单',
+        body: goods.names,
         // subject: goods.goodsName, // 商品名称
-        // timeout_express: '5m', // 超时时间
+        timeout_express: '5m', // 超时时间
         // passback_params: JSON.stringify(goods.pack_params), // 将会返回的一个参数，可用于自定义商品信息最后做通知使用
     }
     const formData = new AlipayFormData(); // 获取一个实例化对象

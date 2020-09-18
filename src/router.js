@@ -11,6 +11,7 @@ const registers = require("./route/registers.js");
 const prescriptions = require("./route/prescriptions.js");
 const anamneses = require("./route/anamneses.js");
 const orders = require("./route/orders.js");
+const hospitals = require("./route/hospitals")
 //import pay from './route/orders.js'
 //pay()
 //const upimgs = require("./route/upimgs.js");
@@ -25,6 +26,7 @@ router.use("/registers", registers);
 router.use("/prescriptions", prescriptions);
 router.use("/anamneses",anamneses)
 router.use("/orders",orders);
+router.use("/hospitals",hospitals)
 //router.use("/upload",upimgs);
 
 router.get("/401", function (req, res) {
