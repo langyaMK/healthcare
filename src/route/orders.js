@@ -12,14 +12,24 @@ var ObjectId = require('mongodb').ObjectId
 
 const AlipaySdk = require('alipay-sdk').default;
 const AlipayFormData = require('alipay-sdk/lib/form').default;
+const alipayConfig = require('../utils/alipay_config')
+// 获取创建订单的自定义模块
+const createOrder = require('../utils/createOrder.js').createOrder;
+// 获取验签自定义模块
+const checkSign = require('../utils/checkSign.js');
 
-let privateKeyPath = path.resolve(__dirname, '../private-key.pem');
+// let privateKeyPath = path.resolve(__dirname, '../private-key.pem');
+// let publicKeyPath = path.resolve(__dirname, '../public-key.pem');
 // console.log(privateKeyPath)
-const alipaySdk = new AlipaySdk({
-    appId: '2021000116693744',
-    privateKey: fs.readFileSync(privateKeyPath, 'ascii'),
-    gateway: 'https://openapi.alipaydev.com/gateway.do'
-});
+
+// const alipaySdk = new AlipaySdk({
+//     appId: '2021000116693744',
+//     privateKey: fs.readFileSync(privateKeyPath, 'ascii'),
+//     gateway: 'https://openapi.alipaydev.com/gateway.do',
+//     // alipayPublicKey: fs.readFileSync(publicKeyPath, 'ascii'),
+// });
+
+const alipaySdk = new AlipaySdk(alipayConfig.AlipayBaseConfig);
 // console.log(fs.readFileSync(privateKeyPath, 'ascii'))
 const method = 'alipay.trade.wap.pay';
 
@@ -58,7 +68,7 @@ orders.post("/",async function (req, res) {
     ])
 
     console.log(searchResult);
-    console.log(searchResult.libraries)
+    // console.log(searchResult.libraries)
     searchResult.forEach(function(item){
         temp.totalAmount += item.number*item.libraries.price
     })
@@ -68,54 +78,88 @@ orders.post("/",async function (req, res) {
     console.log("order")
 
     console.log(order.totalAmount)
+    var result = {};
     
     try{
-        const formData = new AlipayFormData();
-        formData.setMethod('get');
-        formData.addField('notifyUrl', 'http://www.com/notify');
-        formData.addField('bizContent', {
-            outTradeNo: JSON.stringify(order._id),
-            productCode: 'FAST_INSTANT_TRADE_PAY',
-            totalAmount: order.totalAmount,
-            subject: '商品',
-            body: '商品详情',
-        });
+        // const formData = new AlipayFormData();
+        // formData.setMethod('get');
+        // formData.addField('notifyUrl', 'https://leeg4ng.com/api/orders/notify');
+        // formData.addField('bizContent', {
+        //     outTradeNo: order._id.toString(),
+        //     productCode: 'FAST_INSTANT_TRADE_PAY',
+        //     totalAmount: order.totalAmount,
+        //     subject: '商品',
+        //     body: '商品详情',
+        // });
 
-        const result = await alipaySdk.exec(method, {}, { formData })
+        // const url = await alipaySdk.exec(method, {}, { formData })
+        const url = await createOrder(order);
+        result.url = url;
+        result.orderId = order._id;
+
         console.log(result);
         res.send(result)
-    }catch(e){
+    } catch(e){
         console.log(e);
     }
-
-
 
     // res.send(result)
     
 })
 
-async function pay() {
-    try{
-        const formData = new AlipayFormData();
-        formData.setMethod('get');
-        formData.addField('notifyUrl', 'http://www.com/notify');
-        formData.addField('bizContent', {
-            outTradeNo: 'out_trade_no',
-            productCode: 'FAST_INSTANT_TRADE_PAY',
-            totalAmount: '0.01',
-            subject: '商品',
-            body: '商品详情',
-        });
+orders.post("/notify",async function (req, res) {
+    // console.log(req)
+    console.log("body")
+    console.log(req.body)
+    // console.log("query")
+    // console.log(req.query)
+    let result = await checkSign(req.body);
+    if(result){
+        console.log(req.body.out_trade_no);
 
-        const result = await alipaySdk.exec(method, {}, { formData })
-        console.log(result);
-    }catch(e){
-        console.log(e);
+        if(req.body.trade_status == "TRADE_SUCCESS"){
+            Order.updateOne({_id: req.body.out_trade_no },{isPaid:true},function (err, result) {
+                console.log(result);
+            })
+            var order = await Order.findOne({_id: req.body.out_trade_no },
+                function (err, result) {
+                    //console.log(result);
+                    // res.send(result);
+            })
+            console.log(order)
+            var prescritionIds = order.prescriptionIds;
+
+            console.log(prescritionIds)
+            prescritionIds.forEach(function(item){
+                Prescription.updateOne({_id:item},{ispaid:true},
+                    function (err, result) {
+                        console.log(result);
+                        // res.send(result);
+                })
+            })
+        }
     }
 
-    
-}
-// pay()
+    res.send("success")
+})
+
+//根据检索条件找订单(姓名模糊筛选)
+orders.get("/", function (req, res) {
+    var id = url.parse(req.url, true).query;
+    var temp = {};
+    if(req.identity == 1){
+        temp.openid = req.username
+    } 
+    //console.log(url.parse(req.url, true).query.Did);
+    // if (id['name']) {
+    //     id['name'] = new RegExp(req.query.name);
+    // }
+    Order.find(temp,
+        function (err, result) {
+            //console.log(result);
+            res.send(result);
+    });
+})
 
 
 // alipaySdk.exec('alipay.system.oauth.token', {

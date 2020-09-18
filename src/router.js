@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-var checktoken = require('./utils/checktoken');
+var checkToken = require('./utils/checkToken');
 const doctors = require("./route/doctors.js");
 const patients = require("./route/patients.js");
 const offices = require("./route/offices.js");
@@ -15,7 +15,7 @@ const orders = require("./route/orders.js");
 //pay()
 //const upimgs = require("./route/upimgs.js");
 
-router.use(checktoken);
+router.use(checkToken);
 router.use("/doctors", doctors);
 router.use("/patients", patients);
 router.use("/offices", offices);

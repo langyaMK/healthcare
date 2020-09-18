@@ -1,8 +1,11 @@
 var express = require('express');
 var offices = express.Router();
 const url = require('url');
+var querystring = require("querystring");
+var request = require('request');
 
 var Office = require("../model/office.js");
+var TokenService = require("../TokenService.js");
 
 var showmodel = { _id: 1, name: 1, class: 1, floor: 1, detail: 1 };
 //根据检索条件找科室
@@ -33,7 +36,7 @@ offices.get("/:id", function (req, res) {
 })
 
 //添加新科室
-offices.post("/", function (req, res) {
+offices.post("/", async function (req, res) {
     console.log(req.body.name);
     //var reponse=JSON.parse(res);
     if (req.body.name) {
@@ -49,7 +52,32 @@ offices.post("/", function (req, res) {
                     res.status(400).json({ message: err.message });
                 }
             } else {
-                res.send("添加成功");
+                 res.send("添加成功");
+            }
+        })
+        let result = await Office.findOne({name: req.body.name }, function (err, result) {
+        });
+        console.log(result);
+        let id = result._id;
+        var access_token = await TokenService.getAccessToken();
+        var param = {
+            //博客上说不能传access_token,可能官方文档有误？
+            // "access_token": access_token,
+            "scene": id,
+            "page": "pages/doctors/doctors"
+        }
+        console.log(param);
+        var options = {
+            method: "post",
+            url: "https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=" + access_token,
+            form: JSON.stringify(param)
+        }
+        request(options, (err, response, body) => {
+            // console.log(`res.body ${res.body}`);
+            if (!err && response.statusCode == 200) {
+                //输出返回的内容
+                console.log(body);
+                //res.send(body);
             }
         })
     } else {

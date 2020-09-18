@@ -10,9 +10,11 @@ function checkToken(req, res, next) {
     // });
     console.log("url " + req.url);
     const path = url.parse(req.url, true).pathname
+    // console.log(req.method)
     //console.log(`url ${path}`)
     //console.log(path != '/patients/sessions' && path !='/doctors/sessions')
-    if ( !((path == '/patients/sessions' || path == '/doctors/sessions') && req.method == 'POST') ) {
+    var pass = (path == '/patients/sessions' || path == '/doctors/sessions' || path == '/orders/notify') && req.method == 'POST'
+    if ( !(pass) ) {
         let tokenclone = req.headers.authorization;
         console.log(tokenclone);
         if (tokenclone) {

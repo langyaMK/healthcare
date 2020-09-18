@@ -145,6 +145,37 @@ registers.post("/notifications", async (req, res) => {
 
 })
 
+//返回挂号表人数
+registers.get("/statistics",async (req, res) => {
+    // var search = {};
+    // Register.countDocuments(search,function(err,count){
+    //     if (err) {
+    //         console.log("Error:" + err);
+    //     }else{
+    //         console.log(count);
+    //         res.send("count "+count);
+    //     }
+    // })
+
+    let counts = await Register.countDocuments({status: {$exists:true}},function(err,count){
+        if(!err){
+            console.log(count);
+        }
+    })
+    res.send(`counts ${counts}`);
+
+    // Register.aggregate([
+    //     {
+    //         $group : {
+    //             total : {$sum: 1}
+    //         }
+    //     }
+    // ]).exec(function(err,result){
+    //     console.log(result);
+    //     res.send(`total ${result}`);
+    // })
+})
+
 //根据检索条件找挂号单
 registers.get("/", async (req, res) => {
     var id = url.parse(req.url, true).query;
@@ -252,7 +283,7 @@ registers.get("/", async (req, res) => {
         
         res.send(resultArr)
     } else if(req.identity == 2||req.identity == 3 ){
-
+        console.log(id)
         if(id.isToday){
             var date = new Date();
             var year = date.getFullYear();
@@ -270,8 +301,17 @@ registers.get("/", async (req, res) => {
         if(id.doctorid){
             id.doctorid = ObjectId(id.doctorid);
         }
-        console.log("registers ",id)
         
+        console.log("registers ",id.isUnresolved == true)
+        /* by LeeG4ng
+         * isUnresovled 返回status为1、2的(未被处理的)
+         */
+        if (id.isUnresolved) {
+            id.status = { "$gte": 1, "$lte": 2 }
+        }
+        delete id.isUnresolved
+
+        console.log("registers ",id)
         let result = await Register.aggregate([
             {
                 $match: id
@@ -337,6 +377,36 @@ registers.get("/:id", function (req, res) {
             res.send(result);
         });
 })
+// //返回挂号表人数
+// registers.get("/statistics",async (req, res) => {
+//     // var search = {};
+//     // Register.countDocuments(search,function(err,count){
+//     //     if (err) {
+//     //         console.log("Error:" + err);
+//     //     }else{
+//     //         console.log(count);
+//     //         res.send("count "+count);
+//     //     }
+//     // })
+
+//     let counts = await Register.countDocuments({status: {$exists:true}},function(err,count){
+//         if(!err){
+//             console.log(count);
+//         }
+//     })
+//     res.send(`counts ${counts}`);
+
+//     // Register.aggregate([
+//     //     {
+//     //         $group : {
+//     //             total : {$sum: 1}
+//     //         }
+//     //     }
+//     // ]).exec(function(err,result){
+//     //     console.log(result);
+//     //     res.send(`total ${result}`);
+//     // })
+// })
 
 //根据_id删除挂号单信息
 registers.delete("/:id", function (req, res) {

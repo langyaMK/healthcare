@@ -117,6 +117,20 @@ patients.get("/",function(req,res){
     }
 })
 
+patients.get("/statistics",async (req, res) => {
+    // Patient.estimatedDocumentCount(function(err,count){
+    //     console.log(count);
+    //     res.send(`count ${count}`);
+    // })
+    Patient.countDocuments({_id: {$exists:true}},function(err,counts){
+        if(!err){
+            console.log(counts);
+            res.send(`count ${counts}`);
+        }
+    })
+
+})
+
 //添加新病人
 patients.post("/",function(req,res){
     console.log(req.body);
