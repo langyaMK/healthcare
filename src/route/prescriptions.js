@@ -10,19 +10,42 @@ var showmodel = {_id:1,openid:1,registerid:1,libraryid:1,ispaid:1,number:1};
 prescriptions.get("/", async (req, res) => {
     var id = url.parse(req.url, true).query;
     console.log(id);
+    var temp={};
     if (req.identity == 1) {
-        id.openid = req.username;
+        // id.openid = req.username;
+        temp.openid = req.username;
+
         //将传过来的ispaid重新换成Boolean类型
         //如果id.ispaid为“true”，则ispaid为true
         //如果id.ispaid为“false”，则ispaid为false
-        let ispaid = id.ispaid==="true";
-        id.ispaid = ispaid;
-        console.log(ispaid);
-        console.log(id.ispaid);
-        console.log(id);
+
+        if(id.prescriptionIds){
+            console.log(id.prescriptionIds)
+            // console.log(id.prescriptionIds.length);
+            if(Object.prototype.toString.call(id.prescriptionIds)=='[object Array]'){
+                id.prescriptionIds.forEach(function(item,index){
+                    id.prescriptionIds[index] = ObjectId(item);
+                })
+                temp._id = { $in: id.prescriptionIds }
+            }else{
+                temp._id = ObjectId(id.prescriptionIds)
+            }
+            
+        }
+        if(id.ispaid){
+            temp.ispaid = id.ispaid === "true";
+        }
+
+        // let ispaid = id.ispaid==="true";
+        // // id.ispaid = ispaid;
+        // temp.ispaid = ispaid;
+        // console.log(ispaid);
+        // console.log(id.ispaid);
+        // console.log(id);
+        console.log(temp);
         let result = await Prescription.aggregate([
             {
-                $match: id
+                $match: temp
             },
             {   // 操作的Model为Prescription
                 $lookup: {

@@ -153,6 +153,7 @@ orders.post("/",async function (req, res) {
 orders.get("/", function (req, res) {
     var id = url.parse(req.url, true).query;
     var temp = {};
+    temp = id;
     if(req.identity == 1){
         temp.openid = req.username
     } 
