@@ -9,7 +9,7 @@ var client = require("../redisConnect.js");
 
 var usermodel = { _id: 1, name: 1, age: 1, sex: 1, rank: 1, office: 1, detail: 1, specialise: 1 };
 var doctormodel = { _id: 1, username: 1, isAdmin: 1, name: 1, age: 1, sex: 1, rank: 1, office: 1, detail: 1, specialise: 1 };
-var adminmodel = { _id: 1, username: 1, password: 1, isAdmin: 1, name: 1, age: 1, rank: 1, pro: 1, office: 1, detail: 1, specialise: 1 };
+var adminmodel = { _id: 1, username: 1, password: 1, isAdmin: 1, sex: 1, name: 1, age: 1, rank: 1, pro: 1, office: 1, detail: 1, specialise: 1 };
 var model;
 
 doctors.post('/sessions', async (req, res, next) => {
